@@ -1,0 +1,271 @@
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 7
+Server version: 10.1.21-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| test               |
++--------------------+
+2 rows in set (0.00 sec)
+
+MariaDB [(none)]> use test;
+Database changed
+MariaDB [test]> create table c1 as select * from customers;
+Query OK, 11 rows affected (0.02 sec)
+Records: 11  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> select *fromc1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'fromc1' at line 1
+MariaDB [test]> select *from c1;
++------------+-----------------+----------+---------------------------+------------+------------+
+| customerID | name            | nickname | address                   | city       | postalcode |
++------------+-----------------+----------+---------------------------+------------+------------+
+|          1 | Ashley          | Ash      | 32 washington street      | WDC        |     321200 |
+|          2 | Bob marley      | Bm       | Kelee street              | Toronto    |     100100 |
+|          3 | Cherlies Theron | Cher     | 329 Empire state Building | NEW YORK   |     120134 |
+|          4 | Denial Jack     | DJ       | Spartan Building. East    | Brazil     |     341020 |
+|          5 | Donna newman    | New      | 250 Carlson blvd          | Toronto    |     130120 |
+|          6 | ESton M.        | M.       | 21 York. DV.              | TORONTO    |     201023 |
+|          7 | Bobby Chacko    | Chac     | Kennedy                   | NEW YORK   |     320300 |
+|          7 | Bobby Chacko    | Chac     | Kennedy                   | NEW YORK   |     320300 |
+|          8 | Ashko Charles   | AK       | Washington D.C.           | USA        |     421044 |
+|          9 | Tony Special    | specie   | Oakville                  | GTA        |     418921 |
+|         10 | Jack sp         | Sparrow  | Oaster village            | NEW Jersey |     102301 |
++------------+-----------------+----------+---------------------------+------------+------------+
+11 rows in set (0.00 sec)
+
+MariaDB [test]> create table c2 as select * from customers where customerID<5;
+Query OK, 4 rows affected (0.02 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> select * from c2;
++------------+-----------------+----------+---------------------------+----------+------------+
+| customerID | name            | nickname | address                   | city     | postalcode |
++------------+-----------------+----------+---------------------------+----------+------------+
+|          1 | Ashley          | Ash      | 32 washington street      | WDC      |     321200 |
+|          2 | Bob marley      | Bm       | Kelee street              | Toronto  |     100100 |
+|          3 | Cherlies Theron | Cher     | 329 Empire state Building | NEW YORK |     120134 |
+|          4 | Denial Jack     | DJ       | Spartan Building. East    | Brazil   |     341020 |
++------------+-----------------+----------+---------------------------+----------+------------+
+4 rows in set (0.00 sec)
+
+MariaDB [test]> select * from c3;
+ERROR 1146 (42S02): Table 'test.c3' doesn't exist
+MariaDB [test]> select * from like c3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'like c3' at line 1
+MariaDB [test]> select * like c3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'like c3' at line 1
+MariaDB [test]> create table c3 like customers;
+Query OK, 0 rows affected (0.03 sec)
+
+MariaDB [test]> insert into c3 select * from customers where customerID>5;
+Query OK, 6 rows affected (0.02 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> select * from c3;
++------------+---------------+----------+-----------------+------------+------------+
+| customerID | name          | nickname | address         | city       | postalcode |
++------------+---------------+----------+-----------------+------------+------------+
+|          6 | ESton M.      | M.       | 21 York. DV.    | TORONTO    |     201023 |
+|          7 | Bobby Chacko  | Chac     | Kennedy         | NEW YORK   |     320300 |
+|          7 | Bobby Chacko  | Chac     | Kennedy         | NEW YORK   |     320300 |
+|          8 | Ashko Charles | AK       | Washington D.C. | USA        |     421044 |
+|          9 | Tony Special  | specie   | Oakville        | GTA        |     418921 |
+|         10 | Jack sp       | Sparrow  | Oaster village  | NEW Jersey |     102301 |
++------------+---------------+----------+-----------------+------------+------------+
+6 rows in set (0.00 sec)
+
+MariaDB [test]> desc cityMaster;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| CityID   | int(4)       | NO   | PRI | NULL    |       |
+| CityName | varchar(225) | YES  |     | toronto |       |
++----------+--------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+MariaDB [test]> alter table cityMaster add column state varchar(50)0;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '0' at line 1
+MariaDB [test]> alter table cityMaster add column state varchar(50);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc cityMaster;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| CityID   | int(4)       | NO   | PRI | NULL    |       |
+| CityName | varchar(225) | YES  |     | toronto |       |
+| state    | varchar(50)  | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+MariaDB [test]> alter table cityMaster modify column state varchar(50);
+Query OK, 0 rows affected (0.00 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc cityMaster;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| CityID   | int(4)       | NO   | PRI | NULL    |       |
+| CityName | varchar(225) | YES  |     | toronto |       |
+| state    | varchar(50)  | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+MariaDB [test]> alter table c2 add primary key (customerID);
+Query OK, 4 rows affected (0.05 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc c2;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| customerID | int(2)      | NO   | PRI | NULL    |       |
+| name       | varchar(50) | YES  |     | NULL    |       |
+| nickname   | varchar(20) | YES  |     | NULL    |       |
+| address    | varchar(40) | YES  |     | NULL    |       |
+| city       | varchar(20) | YES  |     | NULL    |       |
+| postalcode | int(6)      | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+MariaDB [test]> alter table c2 modify name varchar(40) not null:
+    ->
+    -> nk;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':
+
+nk' at line 1
+MariaDB [test]> alter table c2 modify name varchar(40) not null;
+Query OK, 4 rows affected (0.59 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc c2;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| customerID | int(2)      | NO   | PRI | NULL    |       |
+| name       | varchar(40) | NO   |     | NULL    |       |
+| nickname   | varchar(20) | YES  |     | NULL    |       |
+| address    | varchar(40) | YES  |     | NULL    |       |
+| city       | varchar(20) | YES  |     | NULL    |       |
+| postalcode | int(6)      | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+6 rows in set (0.01 sec)
+
+MariaDB [test]> alter table c2 modify postalcode integer(6) not null;
+Query OK, 4 rows affected (0.03 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc c2;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| customerID | int(2)      | NO   | PRI | NULL    |       |
+| name       | varchar(40) | NO   |     | NULL    |       |
+| nickname   | varchar(20) | YES  |     | NULL    |       |
+| address    | varchar(40) | YES  |     | NULL    |       |
+| city       | varchar(20) | YES  |     | NULL    |       |
+| postalcode | int(6)      | NO   |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+6 rows in set (0.01 sec)
+
+MariaDB [test]> alter table c2 add constrainrt unique (City) ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'unique (City)' at line 1
+MariaDB [test]> alter table c2 add constrainrt unique (City);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'unique (City)' at line 1
+MariaDB [test]> alter table c2 add constraint unique (City);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc c2;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| customerID | int(2)      | NO   | PRI | NULL    |       |
+| name       | varchar(40) | NO   |     | NULL    |       |
+| nickname   | varchar(20) | YES  |     | NULL    |       |
+| address    | varchar(40) | YES  |     | NULL    |       |
+| city       | varchar(20) | YES  | UNI | NULL    |       |
+| postalcode | int(6)      | NO   |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+MariaDB [test]> alter table c2 modify name varchar(40);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc c2;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| customerID | int(2)      | NO   | PRI | NULL    |       |
+| name       | varchar(40) | YES  |     | NULL    |       |
+| nickname   | varchar(20) | YES  |     | NULL    |       |
+| address    | varchar(40) | YES  |     | NULL    |       |
+| city       | varchar(20) | YES  | UNI | NULL    |       |
+| postalcode | int(6)      | NO   |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+MariaDB [test]> alter table c2 drop index city;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> desc c2;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| customerID | int(2)      | NO   | PRI | NULL    |       |
+| name       | varchar(40) | YES  |     | NULL    |       |
+| nickname   | varchar(20) | YES  |     | NULL    |       |
+| address    | varchar(40) | YES  |     | NULL    |       |
+| city       | varchar(20) | YES  |     | NULL    |       |
+| postalcode | int(6)      | NO   |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+MariaDB [test]> show index from c2;
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| c2    |          0 | PRIMARY  |            1 | customerID  | A         |           4 |     NULL | NULL   |      | BTREE      |         |               |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+1 row in set (0.00 sec)
+
+MariaDB [test]> alter table c2 add constraint unique(city);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> show index from c2;
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| c2    |          0 | PRIMARY  |            1 | customerID  | A         |           4 |     NULL | NULL   |      | BTREE      |         |               |
+| c2    |          0 | city     |            1 | city        | A         |           4 |     NULL | NULL   | YES  | BTREE      |         |               |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+2 rows in set (0.00 sec)
+
+MariaDB [test]> drop index on c2;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'on c2' at line 1
+MariaDB [test]> drop index city on c2;
+Query OK, 0 rows affected (0.00 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [test]> show index from c2;
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| c2    |          0 | PRIMARY  |            1 | customerID  | A         |           4 |     NULL | NULL   |      | BTREE      |         |               |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+1 row in set (0.00 sec)
+
+MariaDB [test]> show index from c2;
